@@ -8,7 +8,7 @@ A proposta deve apresentar uma ideia simples, clara e viável para ser desenvolv
 
 Escreva aqui o nome provisório do jogo.
 
-Exemplo:
+Exemplo: Nave Py
 
 > Corrida dos Obstáculos
 
@@ -16,10 +16,10 @@ Exemplo:
 
 Liste os integrantes do grupo.
 
-- Nome 1:
-- Nome 2:
-- Nome 3:
-- Nome 4:
+- Nome 1: Pedro Henrique Alves Ferreira
+- Nome 2: Enzo Bonzi Cassilhas
+- Nome 3: Mateus Evaristo Melo
+- Nome 4: Bernardo Calegari
 
 ## 3. Tipo de jogo
 
@@ -42,7 +42,7 @@ Exemplos:
 
 Tipo escolhido pelo grupo:
 
-> Escreva aqui.
+>Nave desviando de meteoros
 
 ## 4. Descrição geral do jogo
 
@@ -57,7 +57,16 @@ Procure responder:
 
 Descrição:
 
-> Escreva aqui.
+- O que aparece na tela?
+- Aparecerão meteoros e terá a nave, o jogador, que deverá atirar nos meteoros e
+  desviar caso necessário.
+- O que o jogador controla?
+- O jogador controla a nave.
+- O que o jogador precisa fazer?
+- Destruir meteoros e desviar caso necessário.
+- Quais desafios aparecem durante a partida?
+- Objetos indo em direção ao jogador, inimigos que disparam projeteis.
+
 
 ## 5. Objetivo do jogador
 
@@ -75,7 +84,7 @@ Exemplos:
 
 Objetivo:
 
-> Escreva aqui.
+- Acumular pontos e sobreviver o máximo de tempo possível.
 
 ## 6. Regras principais
 
@@ -91,11 +100,11 @@ Exemplo:
 
 Regras do grupo:
 
-- Regra 1:
-- Regra 2:
-- Regra 3:
-- Regra 4:
-- Regra 5:
+- Regra 1: 3 vidas iniciais.
+- Regra 2: cada colisão remove 1 vida.
+- Regra 3: sistema baseado em partidas.
+- Regra 4: inimigos em posições aleatórias.
+- Regra 5: dificuldade progressiva.
 
 ## 7. Condição de vitória
 
@@ -111,7 +120,7 @@ Exemplos:
 
 Condição de vitória:
 
-> Escreva aqui.
+- Para vencer o jogador deverá derrotar o chefão.
 
 ## 8. Condição de derrota ou encerramento
 
@@ -127,21 +136,27 @@ Exemplos:
 
 Condição de derrota ou encerramento:
 
-> Escreva aqui.
+Caso perca todas as vidas, o jogador perderá e deverá recomeçar. Caso derrotar
+o chefe final, terá a partida finalizado por vitória.
 
 ## 9. Elementos previstos no jogo
 
-Descreva os principais elementos que farão parte do jogo.
+Sistema de upgrades baseado em hordas.
+Upgrades ao final de cada horda.
+Sistema de moedas.
+Ranking baseado em hordas.
+Loja de skins.
 
 ## Jogador ou elemento principal
 
 Exemplo:
 
-> Um personagem controlado pelas setas do teclado.
+Uma nave controlada pelas setas do teclado ou pelas teclas "wasd"
 
 Descrição:
 
-> Escreva aqui.
+Ao clicar nas teclas do teclado, o personagem poderá se movimentar para a esquerda,
+direita, para baixo e para cima.
 
 ## Obstáculos, inimigos ou desafios
 
@@ -151,7 +166,8 @@ Exemplo:
 
 Descrição:
 
-> Escreva aqui.
+Obstáculos que disparam projeteis em direção ao jogador e se movimentam da ale
+atoriamente, obstáculos que se movimentam em um linha reta em direção ao jogador.
 
 ## Itens, alvos ou objetos de interação
 
@@ -161,7 +177,7 @@ Exemplo:
 
 Descrição:
 
-> Escreva aqui.
+> Alvos: Meteoros e aliens.
 
 ## Pontuação, vidas, tempo ou progresso
 
@@ -171,7 +187,8 @@ Exemplo:
 
 Descrição:
 
-> Escreva aqui.
+> O jogador começa com 3 vidas e recebe um upgrade para cada 5 hordas, melhorando
+> a performance da nave.
 
 ## 10. Controles previstos
 
@@ -188,9 +205,10 @@ Exemplo:
 
 Controles do grupo:
 
+- Tecla/comando: Seta para cima: mover para cima
+- Tecla/comando: Seta para baixo: mover para baixo
 - Tecla/comando:
-- Tecla/comando:
-- Tecla/comando:
+- Tecla/comando: ESC: pausar o jogo
 
 ## 11. Organização inicial do código
 
@@ -206,7 +224,12 @@ Exemplo:
 
 Organização planejada:
 
-> Escreva aqui.
+> main.py: Inicia o jogo
+> src/jogo.py: contém o loop principal
+> src/config.py: guarda configurações como tamanho da tela e cores
+> src/funcoes.py: contém funções auxiliares
+> src/dados.py: contém funções de leitura e escrita de arquivos
+
 
 
 ## 12. Recursos externos previstos
@@ -222,7 +245,12 @@ Exemplo:
 
 Recursos previstos:
 
-> Escreva aqui.
+> sprite de nave
+> sprite de nave inimiga
+> sprite de meteoro
+> sons gratuitos
+> tutorial básico
+
 
 Caso não pretenda utilizar recursos externos, escreva:
 
@@ -245,9 +273,9 @@ Exemplos:
 
 Dificuldades previstas:
 
-- Dificuldade 1:
-- Dificuldade 2:
-- Dificuldade 3:
+- Dificuldade 1: Desviar de projetil
+- Dificuldade 2: Acertar os tiros
+- Dificuldade 3: Derrotar o chefão
 
 ## 14. Escopo mínimo para a entrega final
 
@@ -261,7 +289,7 @@ Exemplo:
 
 Escopo mínimo:
 
-> Escreva aqui.
+> O mínimo seria a nave do jogador se movimentando e atirando para que posso destruir os obstáculos.
 
 ## 15. Possíveis melhorias, caso haja tempo
 
@@ -281,6 +309,6 @@ Exemplos:
 
 Melhorias possíveis:
 
-- Melhoria 1:
-- Melhoria 2:
-- Melhoria 3:
+- Melhoria 1: Skins
+- Melhoria 2: Inimigos novos
+- Melhoria 3: Modo infinito
