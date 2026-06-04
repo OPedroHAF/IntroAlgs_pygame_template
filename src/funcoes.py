@@ -7,9 +7,9 @@ from src.config import(
     JOGADOR_ALTURA,
     JOGADOR_LARGURA ,
     JOGADOR_VEL,
-    ESTRELA_ALTURA ,
-    ESTRELA_LARGURA ,
-    ESTRELA_VEL,
+    METEORO_ALTURA ,
+    METEORO_LARGURA ,
+    METEORO_VEL,
     PRETO
 )
 
