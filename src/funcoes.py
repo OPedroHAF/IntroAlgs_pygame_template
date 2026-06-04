@@ -1,27 +1,32 @@
-def calcular_pontos(pontos_atual, pontos_ganhos):
-    """Soma os pontos ganhos à pontuação atual."""
-    return pontos_atual + pontos_ganhos
+import pygame
+from src.config import(
+    TELA_LARGURA,
+    TELA_ALTURA,
+    FPS,
+    TITULO_JOGO,
+    JOGADOR_ALTURA,
+    JOGADOR_LARGURA ,
+    JOGADOR_VEL,
+    ESTRELA_ALTURA ,
+    ESTRELA_LARGURA ,
+    ESTRELA_VEL,
+    PRETO
+)
 
-
-def tomar_dano(vida_atual, dano):
-    """Reduz a vida atual com base no dano recebido."""
-    return vida_atual - dano
-
-
-def jogador_perdeu(vidas):
-    """Indica se o jogador ficou sem vidas."""
-    return vidas <= 0
-
-
-def limitar_valor(valor, minimo, maximo):
-    """Mantém um valor dentro do intervalo [minimo, maximo]."""
-    if valor < minimo:
-        return minimo
-    if valor > maximo:
-        return maximo
-    return valor
-
-
-def verificar_colisao(retangulo_1, retangulo_2):
-    """Verifica sobreposição entre dois retângulos do Pygame."""
-    return retangulo_1.colliderect(retangulo_2)
+def jogador_movimentacao(teclas, jogador):
+    if teclas[pygame.K_UP] and jogador.y - JOGADOR_VEL >= 0:
+        jogador.y -= JOGADOR_VEL
+    if teclas[pygame.K_DOWN] and jogador.y + JOGADOR_VEL <= TELA_ALTURA - JOGADOR_ALTURA:
+        jogador.y += JOGADOR_VEL
+    if teclas[pygame.K_RIGHT] and jogador.x + JOGADOR_VEL <= TELA_LARGURA - JOGADOR_LARGURA:
+        jogador.x += JOGADOR_VEL
+    if teclas[pygame.K_LEFT] and jogador.x - JOGADOR_VEL >= 0:
+        jogador.x -= JOGADOR_VEL
+    if teclas[pygame.K_w] and jogador.y - JOGADOR_VEL >= 0:
+        jogador.y -= JOGADOR_VEL
+    if teclas[pygame.K_s] and jogador.y + JOGADOR_VEL <= TELA_ALTURA - JOGADOR_ALTURA:
+        jogador.y += JOGADOR_VEL
+    if teclas[pygame.K_d] and jogador.x + JOGADOR_VEL < TELA_LARGURA - JOGADOR_LARGURA:
+        jogador.x += JOGADOR_VEL
+    if teclas[pygame.K_a] and jogador.x - JOGADOR_VEL > 0:
+        jogador.x -= JOGADOR_VEL
