@@ -17,7 +17,8 @@ from src.config import(
     FONTE
 )
 from src.funcoes import (
-    jogador_movimentacao
+    jogador_movimentacao,
+    gerar_meteoro
 )
 
 pygame.font.init()
@@ -25,6 +26,21 @@ pygame.font.init()
 #utilizando as variáveos de config
 TELA = pygame.display.set_mode((TELA_LARGURA, TELA_ALTURA))
 pygame.display.set_caption("Nave Py")
+
+def gerar_meteoro(meteoros):
+    while True:
+        meteoro_x = random.randint(0, TELA_LARGURA - METEORO_LARGURA)
+        meteoro_y = random.randint(-600, -METEORO_ALTURA)
+        novo = pygame.Rect(meteoro_x, meteoro_y, METEORO_LARGURA, METEORO_ALTURA)
+        colisao = False
+
+        for m in meteoros:
+            if novo.colliderect(m):
+                colisao = True
+                break
+        
+        if not colisao:
+            return novo
 
 def desenhar(jogador, tempo_corrido, vidas, meteoros):
     pygame.draw.rect(TELA, (255,255,255), jogador)
@@ -59,20 +75,17 @@ def main():
     meteoros = []
 
     while run:
-        clock.tick(FPS)
+        clock_delta = clock.tick(FPS)
+        
         tempo_corrido = time.time() - tempo_inicio
-        hit = False
         #contador recebe o tempo em milisegundos para cada tick
-        meteoro_contador += clock.tick(FPS)
-        if meteoro_contador > meteoro_add:
-            for _ in range(2):
-                #gerando uma posição aleatória para o objeto meteoro
-                meteoro_x = random.randint(0, TELA_LARGURA - METEORO_LARGURA)
-                meteoro_y = random.randint(-600, -METEORO_ALTURA)
-                #criando o objeto meteoro
-                meteoro = pygame.Rect(meteoro_x, meteoro_y, METEORO_LARGURA, METEORO_ALTURA)
-                meteoros.append(meteoro)
-            meteoro_add = max(200, 800 - 2200)
+        meteoro_contador += clock_delta
+        hit = False
+
+        if meteoro_contador > meteoro_add:            
+            meteoro = gerar_meteoro(meteoros)
+            meteoros.append(meteoro)
+            meteoro_add = max(200, meteoro_add - 200)
             meteoro_contador = 0
 
         for event in pygame.event.get():
