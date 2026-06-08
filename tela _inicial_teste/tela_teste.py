@@ -9,8 +9,19 @@ def main():
     frame=pygame.time.Clock()
     cor=(6, 1, 51)
 
-    sup=pygame.Surface((870, 560))
+    sup=pygame.Surface((800, 100))
     sup.fill((0, 0, 0))
+
+    sup2=pygame.Surface((400, 100))
+    sup2.fill((0, 0, 0))
+
+    sup3=pygame.Surface((400, 100))
+    sup3.fill((0, 0, 0))
+
+    sup4=pygame.Surface((400, 100))
+    sup4.fill((0, 0, 0))
+
+
 
     estrelas= []
 
@@ -48,7 +59,10 @@ def main():
                 2
             )
 
-        tela.blit(sup, (15, 20))
+        tela.blit(sup, (50, 20))
+        tela.blit(sup2, (250, 150))
+        tela.blit(sup3, (250, 300))
+        tela.blit(sup4, (250, 450))
 
         pygame.display.update()
 
