@@ -44,7 +44,7 @@ frame_atual = 0
 #----------------------------------------------------------------------------
 
 #Desenhando os elementos na tela---------------------------------------------
-def desenhar(jogador, tempo_corrido, vidas, meteoros, tiros):
+def desenhar(jogador, tempo_corrido, vidas, meteoros, tiros, onda_idx, onda_elapsed):
     global frame_atual
     TELA.fill(PRETO)
     TELA.blit(JOGADOR_NAVE, (jogador.x, jogador.y))
@@ -54,6 +54,15 @@ def desenhar(jogador, tempo_corrido, vidas, meteoros, tiros):
 
     vidas_string = FONTE.render(f"{vidas} HP", 1, "white")
     TELA.blit(vidas_string, (TELA_LARGURA - vidas_string.get_width() - 10, TELA_ALTURA - vidas_string.get_height() - 10))
+
+    if onda_elapsed <= 3.0:
+        progresso = min(onda_elapsed, 3.0) / 3.0
+        opacidade = int(255 * (1.0 - progresso))
+        onda_string = FONTE.render(f"HORDA {onda_idx + 1}", True, (255, 255, 255))
+        onda_string.set_alpha(opacidade)
+        x = (TELA_LARGURA - onda_string.get_width()) // 2
+        y = 20
+        TELA.blit(onda_string, (x, y))
 
     for tiro in tiros:
         pygame.draw.rect(TELA, "white", tiro)
@@ -69,19 +78,21 @@ def desenhar(jogador, tempo_corrido, vidas, meteoros, tiros):
 #--------------------------------------------------------------------------
 def main():
     run = True
-
     tempo_inicio = time.time()
     tempo_corrido = 0
-
     clock = pygame.time.Clock()
-
     jogador = pygame.Rect((TELA_LARGURA - JOGADOR_LARGURA) // 2, TELA_ALTURA - JOGADOR_ALTURA * 2, JOGADOR_LARGURA, JOGADOR_ALTURA)
     vidas = JOGADOR_VIDAS
     
-    meteoro_add = 2000
+#WAVES--------------------------------------------------------------------------
+    ondas = [2000, 1600, 1200, 800, 400]
+    onda_idx = 0
+    onda_duracao = 25
+#-------------------------------------------------------------------------------
+    meteoro_add = ondas[onda_idx]
     meteoro_contador = 0
     meteoros = []
-
+    onda_inicio = time.time()
     tiros = []
     while run:
         clock_delta = clock.tick(FPS)
@@ -94,8 +105,11 @@ def main():
         if meteoro_contador > meteoro_add:            
             meteoro = gerar_meteoro(meteoros)
             meteoros.append(meteoro)
-            meteoro_add = max(200, meteoro_add - 200)
             meteoro_contador = 0
+        if tempo_corrido >= (onda_idx + 1) * onda_duracao and onda_idx < len(ondas) - 1:
+            onda_idx +=1
+            meteoro_add = ondas[onda_idx]
+            onda_inicio = time.time()
 
 #AREA DOS EVENTO---------------------------------------------------------------
         for event in pygame.event.get():
@@ -110,7 +124,6 @@ def main():
 #MOVIMENTAÇÃO DO JOGADOR-------------------------------------------------------
         teclas = pygame.key.get_pressed()
         jogador_movimentacao(teclas, jogador)
-
         for meteoro in meteoros[:]:
             meteoro.y += METEORO_VEL
             if meteoro.y > TELA_ALTURA:
@@ -121,17 +134,16 @@ def main():
                 break
 #------------------------------------------------------------------------------
         tiros_movimentacao(tiros, meteoros)
-
         if hit:
             vidas -= 1
             if vidas <= 0:
-                desenhar(jogador, tempo_corrido, vidas, meteoros, tiros)
+                desenhar(jogador, tempo_corrido, vidas, meteoros, tiros, onda_idx, onda_elapsed)
                 game_over()
                 run = False
-            
+        onda_elapsed = time.time() - onda_inicio
         if run:
-            desenhar(jogador, tempo_corrido, vidas, meteoros, tiros)
-            
+            desenhar(jogador, tempo_corrido, vidas, meteoros, tiros, onda_idx, onda_elapsed)
+
     pygame.quit()
 
 if __name__ == "__main__":
