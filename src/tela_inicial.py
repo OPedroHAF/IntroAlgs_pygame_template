@@ -4,21 +4,21 @@ import random
 def main():
     pygame.init()
 
-    tela= pygame.display.set_mode([900, 600])
+    tela= pygame.display.set_mode([800, 600])
     pygame.display.set_caption("Iniciando jogo")
     frame=pygame.time.Clock()
     cor=(6, 1, 51)
 
-    sup=pygame.Surface((800, 100))
+    sup=pygame.Surface((700, 100))
     sup.fill((0, 0, 0))
 
-    sup2=pygame.Surface((400, 100))
+    sup2=pygame.Surface((300, 100))
     sup2.fill((0, 0, 0))
 
-    sup3=pygame.Surface((400, 100))
+    sup3=pygame.Surface((300, 100))
     sup3.fill((0, 0, 0))
 
-    sup4=pygame.Surface((400, 100))
+    sup4=pygame.Surface((300, 100))
     sup4.fill((0, 0, 0))
 
 
@@ -26,7 +26,7 @@ def main():
     estrelas= []
 
     for i in range (100):
-        x=random.randint(0,900)
+        x=random.randint(0,800)
         y = random.randint(0, 600)
 
         velocidade = random.randint(1, 5)
@@ -40,7 +40,7 @@ def main():
             if evento.type== pygame.QUIT:
                 ativo= False
 
-        frame.tick(30)
+        frame.tick(60)
 
         tela.fill(cor)
 
@@ -50,7 +50,7 @@ def main():
 
             if estrela[1] > 600:
                 estrela[1] = 0
-                estrela[0] = random.randint(0, 900)
+                estrela[0] = random.randint(0, 800)
 
             pygame.draw.circle(
                 tela,
