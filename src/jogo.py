@@ -141,3 +141,6 @@ def executar_jogo():
         pygame.display.flip()
 
     pygame.quit()
+
+if __name__ == "__main__":
+    executar_jogo()
