@@ -2,8 +2,8 @@ import pygame
 import time
 import random
 from src.config import(
-    TELA_LARGURA,
-    TELA_ALTURA,
+    LARGURA__TELA,
+    ALTURA__TELA,
     FPS,
     TITULO_JOGO,
     JOGADOR_ALTURA,
@@ -28,7 +28,7 @@ from src.funcoes import (
 
 pygame.init()
 pygame.font.init()
-TELA = pygame.display.set_mode((TELA_LARGURA, TELA_ALTURA))
+TELA = pygame.display.set_mode((LARGURA__TELA, ALTURA__TELA))
 pygame.display.set_caption(TITULO_JOGO)
 JOGADOR_NAVE = pygame.transform.scale(JOGADOR_NAVE_IMAGEM, (JOGADOR_LARGURA,JOGADOR_ALTURA))
 
@@ -51,17 +51,17 @@ def desenhar(jogador, tempo_corrido, vidas, meteoros, tiros, onda_idx, onda_elap
     TELA.blit(JOGADOR_NAVE, (jogador.x, jogador.y))
 
     tempo_string = FONTE.render(f"{round(tempo_corrido)}s", 1, "white")
-    TELA.blit(tempo_string, (tempo_string.get_width(), TELA_ALTURA - tempo_string.get_height() - 10))
+    TELA.blit(tempo_string, (tempo_string.get_width(), ALTURA__TELA - tempo_string.get_height() - 10))
 
     vidas_string = FONTE.render(f"{vidas} HP", 1, "white")
-    TELA.blit(vidas_string, (TELA_LARGURA - vidas_string.get_width() - 10, TELA_ALTURA - vidas_string.get_height() - 10))
+    TELA.blit(vidas_string, (LARGURA__TELA - vidas_string.get_width() - 10, ALTURA__TELA - vidas_string.get_height() - 10))
 
     if onda_elapsed <= 3.0:
         progresso = min(onda_elapsed, 3.0) / 3.0
         opacidade = int(255 * (1.0 - progresso))
         onda_string = FONTE.render(f"HORDA {onda_idx + 1}", True, (255, 255, 255))
         onda_string.set_alpha(opacidade)
-        x = (TELA_LARGURA - onda_string.get_width()) // 2
+        x = (LARGURA__TELA - onda_string.get_width()) // 2
         y = 20
         TELA.blit(onda_string, (x, y))
 
@@ -82,7 +82,7 @@ def executar_jogo():
     tempo_inicio = time.time()
     tempo_corrido = 0
     clock = pygame.time.Clock()
-    jogador = pygame.Rect((TELA_LARGURA - JOGADOR_LARGURA) // 2, TELA_ALTURA - JOGADOR_ALTURA * 2, JOGADOR_LARGURA, JOGADOR_ALTURA)
+    jogador = pygame.Rect((LARGURA__TELA - JOGADOR_LARGURA) // 2, ALTURA__TELA - JOGADOR_ALTURA * 2, JOGADOR_LARGURA, JOGADOR_ALTURA)
     vidas = JOGADOR_VIDAS
     
 #WAVES--------------------------------------------------------------------------
@@ -131,7 +131,7 @@ def executar_jogo():
         jogador_movimentacao(teclas, jogador)
         for meteoro in meteoros[:]:
             meteoro.y += METEORO_VEL
-            if meteoro.y > TELA_ALTURA:
+            if meteoro.y > ALTURA__TELA:
                 meteoros.remove(meteoro)
             elif meteoro.colliderect(jogador):
                 meteoros.remove(meteoro)
