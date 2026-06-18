@@ -1,13 +1,30 @@
 # Configurações centrais do jogo (tela, cores e caminhos de arquivos).
-LARGURA_TELA = 800
-ALTURA_TELA = 600
+import pygame
+pygame.init()
+pygame.font.init()
+
+TELA_LARGURA = 700
+TELA_ALTURA = 700
 FPS = 60
 
 TITULO_JOGO = "Projeto Final - Pygame"
 
-BRANCO = (255, 255, 255)
-PRETO = (0, 0, 0)
-CINZA = (212,212,212)
+JOGADOR_ALTURA = 100
+JOGADOR_LARGURA = 100
+JOGADOR_VEL = 6
+JOGADOR_VIDAS = 3
+JOGADOR_NAVE_IMAGEM = pygame.image.load("assets/imagens/jogador_nave.png")
 
-CAMINHO_RECORDE = "data/recorde.txt"
-CAMINHO_SPRITES = "assets/imagens/spritesheet.bmp"
+METEORO_ALTURA = 50
+METEORO_LARGURA = 50
+METEORO_VEL = 3
+
+TIRO_VEL = 7
+TIRO_LARGURA = 5
+TIRO_ALTURA = 15
+
+PRETO = (0, 0, 0)
+
+FONTE = pygame.font.SysFont("Times New Roman", 22)
+
+
