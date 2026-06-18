@@ -14,7 +14,6 @@ from src.config import(
     METEORO_LARGURA ,
     METEORO_VEL,
     PRETO,
-    TELA,
     FONTE,
     TIRO_ALTURA,
     TIRO_LARGURA,
@@ -76,8 +75,8 @@ def atirar(jogador, tiros):
     novo_tiro = pygame.Rect(tiro_x, tiro_y, TIRO_LARGURA, TIRO_ALTURA)
     tiros.append(novo_tiro)
 
-def game_over():
-    TELA.fill(PRETO)
+def game_over(tela):
+    tela.fill(PRETO)
 
     gameover_string = FONTE.render("GAME OVER", True, (255, 255, 255))
 
@@ -85,7 +84,7 @@ def game_over():
         center=(TELA_LARGURA // 2, TELA_ALTURA // 2)
     )
 
-    TELA.blit(gameover_string, gameover_rect)
+    tela.blit(gameover_string, gameover_rect)
     pygame.display.update()
     
 def calcular_pontos(pontos_atuais, pontos_ganhos):
