@@ -17,6 +17,7 @@ from src.config import(
     METEORO_VEL,
     PRETO,
     FONTE,
+    FONTE_GRANDE,
     JOGADOR_NAVE_IMAGEM
 )
 from src.funcoes import (
@@ -60,10 +61,8 @@ def desenhar(jogador, tempo_corrido, vidas, meteoros, tiros, onda_idx, onda_elap
     if onda_elapsed <= 3.0:
         progresso = min(onda_elapsed, 3.0) / 3.0
         opacidade = int(255 * (1.0 - progresso))
-        onda_string = FONTE.render(f"HORDA {onda_idx + 1}", True, (255, 255, 255))
-
-        onda_rect = onda_string.get_rect(center=(TELA_LARGURA // 2, 40))
-
+        onda_string = FONTE_GRANDE.render(f"HORDA {onda_idx + 1}", True, (255, 255, 255))
+        onda_rect = onda_string.get_rect(center=(TELA_LARGURA // 2, TELA_ALTURA // 2))
         TELA.blit(onda_string, onda_rect)
 
     for tiro in tiros:

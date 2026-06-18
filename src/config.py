@@ -3,8 +3,8 @@ import pygame
 pygame.init()
 pygame.font.init()
 
-TELA_LARGURA = 700
-TELA_ALTURA = 700
+TELA_LARGURA = 800
+TELA_ALTURA = 600
 FPS = 60
 
 TITULO_JOGO = "Projeto Final - Pygame"
@@ -25,6 +25,7 @@ TIRO_ALTURA = 15
 
 PRETO = (0, 0, 0)
 
-FONTE = pygame.font.SysFont("Times New Roman", 22)
+FONTE = pygame.font.Font("assets/fontes/PressStart2P-Regular.ttf", 14)
+FONTE_GRANDE = pygame.font.Font("assets/fontes/PressStart2P-Regular.ttf", 22)
 
 

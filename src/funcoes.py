@@ -15,6 +15,7 @@ from src.config import(
     METEORO_VEL,
     PRETO,
     FONTE,
+    FONTE_GRANDE,
     TIRO_ALTURA,
     TIRO_LARGURA,
     TIRO_VEL
@@ -78,7 +79,10 @@ def atirar(jogador, tiros):
 def game_over(tela):
     tela.fill(PRETO)
 
-    gameover_string = FONTE.render("GAME OVER", True, (255, 255, 255))
+def game_over(tela):
+    tela.fill(PRETO)
+
+    gameover_string = FONTE_GRANDE.render("GAME OVER", True, (255, 255, 255))
 
     gameover_rect = gameover_string.get_rect(
         center=(TELA_LARGURA // 2, TELA_ALTURA // 2)
