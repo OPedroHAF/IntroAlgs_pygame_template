@@ -1,146 +1,156 @@
 import pygame
-
-from src.config import (
-    LARGURA_TELA,
-    ALTURA_TELA,
+import time
+import random
+from src.config import(
+    TELA_LARGURA,
+    TELA_ALTURA,
     FPS,
     TITULO_JOGO,
-    CINZA,
-    CAMINHO_RECORDE,
-    CAMINHO_SPRITES,
+    JOGADOR_ALTURA,
+    JOGADOR_LARGURA ,
+    JOGADOR_VEL,
+    JOGADOR_VIDAS,
+    METEORO_ALTURA ,
+    METEORO_LARGURA ,
+    METEORO_VEL,
+    PRETO,
+    FONTE,
+    JOGADOR_NAVE_IMAGEM
 )
-
 from src.funcoes import (
-    calcular_pontos,
-    jogador_perdeu,
-    limitar_valor,
-    verificar_colisao,
-    tomar_dano,
-)
-from src.sprites import pegar_sprite
-from src.dados import (
-    salvar_recorde,
-    carregar_recorde,
+    jogador_movimentacao,
+    gerar_meteoro,
+    game_over,
+    atirar,
+    tiros_movimentacao,
+    vitoria
 )
 
+pygame.init()
+pygame.font.init()
+TELA = pygame.display.set_mode((TELA_LARGURA, TELA_ALTURA))
+pygame.display.set_caption(TITULO_JOGO)
+JOGADOR_NAVE = pygame.transform.scale(JOGADOR_NAVE_IMAGEM, (JOGADOR_LARGURA,JOGADOR_ALTURA))
 
+#Variaveis para a animação do meteoro---------------------------------------
+METEORO_FRAMES =[
+    pygame.transform.rotate(pygame.image.load("assets/imagens/FB001.png").convert_alpha(), 270),
+    pygame.transform.rotate(pygame.image.load("assets/imagens/FB002.png").convert_alpha(), 270),
+    pygame.transform.rotate(pygame.image.load("assets/imagens/FB003.png").convert_alpha(), 270),
+    pygame.transform.rotate(pygame.image.load("assets/imagens/FB004.png").convert_alpha(), 270),
+    pygame.transform.rotate(pygame.image.load("assets/imagens/FB005.png").convert_alpha(), 270),
+]
+animacao_vel = 0.2
+frame_atual = 0
+#----------------------------------------------------------------------------
+
+#Desenhando os elementos na tela---------------------------------------------
+def desenhar(jogador, tempo_corrido, vidas, meteoros, tiros, onda_idx, onda_elapsed):
+    global frame_atual
+    TELA.fill(PRETO)
+    TELA.blit(JOGADOR_NAVE, (jogador.x, jogador.y))
+
+    tempo_string = FONTE.render(f"{round(tempo_corrido)}s", 1, "white")
+    TELA.blit(tempo_string, (tempo_string.get_width(), TELA_ALTURA - tempo_string.get_height() - 10))
+
+    vidas_string = FONTE.render(f"{vidas} HP", 1, "white")
+    TELA.blit(vidas_string, (TELA_LARGURA - vidas_string.get_width() - 10, TELA_ALTURA - vidas_string.get_height() - 10))
+
+    if onda_elapsed <= 3.0:
+        progresso = min(onda_elapsed, 3.0) / 3.0
+        opacidade = int(255 * (1.0 - progresso))
+        onda_string = FONTE.render(f"HORDA {onda_idx + 1}", True, (255, 255, 255))
+        onda_string.set_alpha(opacidade)
+        x = (TELA_LARGURA - onda_string.get_width()) // 2
+        y = 20
+        TELA.blit(onda_string, (x, y))
+
+    for tiro in tiros:
+        pygame.draw.rect(TELA, "white", tiro)
+
+    for meteoro in meteoros:
+        frame_atual += animacao_vel
+        if frame_atual >= len(METEORO_FRAMES):
+            frame_atual = 0
+        frame_ativo = METEORO_FRAMES[int(frame_atual)]
+        TELA.blit(frame_ativo,(meteoro.x, meteoro.y))
+
+    pygame.display.update()
+#--------------------------------------------------------------------------
 def executar_jogo():
-    """Executa o loop principal do jogo e controla estado, colisões e pontuação."""
-    pygame.init()
+    run = True
+    tempo_inicio = time.time()
+    tempo_corrido = 0
+    clock = pygame.time.Clock()
+    jogador = pygame.Rect((TELA_LARGURA - JOGADOR_LARGURA) // 2, TELA_ALTURA - JOGADOR_ALTURA * 2, JOGADOR_LARGURA, JOGADOR_ALTURA)
+    vidas = JOGADOR_VIDAS
     
+#WAVES--------------------------------------------------------------------------
+    ondas = [2000, 1600, 1200, 800, 400]
+    onda_idx = 0
+    onda_duracao = 25
+#-------------------------------------------------------------------------------
+    meteoro_add = ondas[onda_idx]
+    meteoro_contador = 0
+    meteoros = []
+    onda_inicio = time.time()
+    tiros = []
+    while run:
+        clock_delta = clock.tick(FPS)
+        
+        tempo_corrido = time.time() - tempo_inicio
 
-    tela = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
-    pygame.display.set_caption(TITULO_JOGO)
+        if tempo_corrido >= len(ondas) * onda_duracao:
+            vitoria()
+            run = False
+        #contador recebe o tempo em milisegundos para cada tick
+        meteoro_contador += clock_delta
+        hit = False
 
-    relogio = pygame.time.Clock()
-    rodando = True
+        if meteoro_contador > meteoro_add:            
+            meteoro = gerar_meteoro(meteoros)
+            meteoros.append(meteoro)
+            meteoro_contador = 0
+        if tempo_corrido >= (onda_idx + 1) * onda_duracao and onda_idx < len(ondas) - 1:
+            onda_idx +=1
+            meteoro_add = ondas[onda_idx]
+            onda_inicio = time.time()
 
-    # 1. Carregando as imagens recortadas do Spritesheet
+#AREA DOS EVENTO---------------------------------------------------------------
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                break
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_z:
+                    atirar(jogador, tiros)
+#------------------------------------------------------------------------------
 
-
-    # Jogador: usando tamanho 110x110 para capturar o quadrado perfeitamente
-    player_image = pegar_sprite(CAMINHO_SPRITES, x=110, y=120, width=190, height=190, scale=0.5)
-
-    # Gema pequena: usando tamanho 64x64
-    gem_image    = pegar_sprite(CAMINHO_SPRITES, x=900, y=690, width=200, height=200, scale=0.5)
-
-    # Morcego: usando tamanho 180x120 por causa das asas abertas
-    bat_image    = pegar_sprite(CAMINHO_SPRITES, x=905, y=1060, width=200, height=130, scale=0.5)
-    
-    # 2. Criando a estrutura de Sprites usando Dicionários
-    jogador = {
-        "imagem": player_image,
-        "rect": player_image.get_rect(topleft=(100, 100))
-    }
-
-    gema = {
-        "imagem": gem_image,
-        "rect": gem_image.get_rect(topleft=(500, 300))
-    }
-    
-    inimigo = {
-        "imagem": bat_image,
-        "rect": bat_image.get_rect(topleft=(200, 500))
-    }
-
-    velocidade = 5
-    pontos = 0
-    vidas = 3
-    recorde = carregar_recorde(CAMINHO_RECORDE)
-
-    # Loop principal: processa entrada, atualiza estado e renderiza a cena.
-    while rodando:
-        relogio.tick(FPS)
-
-        for evento in pygame.event.get():
-            if evento.type == pygame.QUIT:
-                rodando = False
-
+#MOVIMENTAÇÃO DO JOGADOR-------------------------------------------------------
         teclas = pygame.key.get_pressed()
-
-        # Movimentação alterando direto os eixos X e Y do retângulo do jogador
-        if teclas[pygame.K_LEFT]:
-            jogador["rect"].x -= velocidade
-        if teclas[pygame.K_RIGHT]:
-            jogador["rect"].x += velocidade
-        if teclas[pygame.K_UP]:
-            jogador["rect"].y -= velocidade
-        if teclas[pygame.K_DOWN]:
-            jogador["rect"].y += velocidade
-
-        # Limitando o jogador dentro das bordas da tela usando as propriedades do Rect
-        jogador["rect"].x = limitar_valor(jogador["rect"].x, 0, LARGURA_TELA - jogador["rect"].width)
-        jogador["rect"].y = limitar_valor(jogador["rect"].y, 0, ALTURA_TELA - jogador["rect"].height)
-
-        # Verificação de colisão com a Gema (antigo 'item')
-        if verificar_colisao(jogador["rect"], gema["rect"]):
-            pontos = calcular_pontos(pontos, 10)
-
-            # Move a gema de lugar ao coletar
-            gema["rect"].x += 80
-            gema["rect"].y += 50
-
-            # Se a gema sair da tela, volta para uma posição segura
-            if gema["rect"].x > LARGURA_TELA - gema["rect"].width:
-                gema["rect"].x = 50
-            if gema["rect"].y > ALTURA_TELA - gema["rect"].height:
-                gema["rect"].y = 50
-
-        # Verificação de colisão com o Inimigo
-        if verificar_colisao(jogador["rect"], inimigo["rect"]):
-            vidas = tomar_dano(vidas, 1)
-
-            # Afasta o inimigo ao colidir
-            inimigo["rect"].x += 80
-            inimigo["rect"].y += 50
-
-            if inimigo["rect"].x > LARGURA_TELA - inimigo["rect"].width:
-                inimigo["rect"].x = 50
-            if inimigo["rect"].y > ALTURA_TELA - inimigo["rect"].height:
-                inimigo["rect"].y = 50
-
-        # Regras de fim de jogo e recorde
-        if jogador_perdeu(vidas):
-            rodando = False
-
-        if pontos > recorde:
-            recorde = pontos
-            salvar_recorde(CAMINHO_RECORDE, recorde)
-
-        pygame.display.set_caption(
-            f"{TITULO_JOGO} | Pontos: {pontos} | Recorde: {recorde} | Vidas: {vidas}"
-        )
-
-        tela.fill(CINZA)
-
-        # Desenhando os elementos na tela passando a imagem e o rect de cada dicionário
-        tela.blit(gema["imagem"], gema["rect"])
-        tela.blit(inimigo["imagem"], inimigo["rect"])
-        tela.blit(jogador["imagem"], jogador["rect"])
-
-        pygame.display.flip()
+        jogador_movimentacao(teclas, jogador)
+        for meteoro in meteoros[:]:
+            meteoro.y += METEORO_VEL
+            if meteoro.y > TELA_ALTURA:
+                meteoros.remove(meteoro)
+            elif meteoro.colliderect(jogador):
+                meteoros.remove(meteoro)
+                hit = True
+                break
+#------------------------------------------------------------------------------
+        tiros_movimentacao(tiros, meteoros)
+        if hit:
+            vidas -= 1
+            if vidas <= 0:
+                desenhar(jogador, tempo_corrido, vidas, meteoros, tiros, onda_idx, onda_elapsed)
+                game_over()
+                run = False
+        onda_elapsed = time.time() - onda_inicio
+        if run:
+            desenhar(jogador, tempo_corrido, vidas, meteoros, tiros, onda_idx, onda_elapsed)
 
     pygame.quit()
 
 if __name__ == "__main__":
-    executar_jogo()
+    # Ponto de entrada da aplicação.
+    main()

@@ -1,9 +1,11 @@
 import pygame
 from src.tela_inicial import main as tela_inicial
-from src.jogo import executar_jogo
+from src.jogo import main as executar_jogo
 
 def iniciar():
     pygame.init()
+
+    tela = pygame.display.set_mode((800, 600))
 
     acao = tela_inicial()
 
