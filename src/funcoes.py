@@ -80,7 +80,13 @@ def atirar(jogador, tiros):
 
 def game_over():
     TELA.fill(PRETO)
-    game_over_string = FONTE.render("GAME OVER", 1, "white")
-    TELA.blit(game_over_string,((TELA_LARGURA - game_over_string.get_width()) // 2, TELA_ALTURA // 2))
+
+    gameover_string = FONTE.render("GAME OVER", True, (255, 255, 255))
+
+    gameover_rect = gameover_string.get_rect(
+        center=(TELA_LARGURA // 2, TELA_ALTURA // 2)
+    )
+
+    TELA.blit(gameover_string, gameover_rect)
+
     pygame.display.update()
-    time.sleep(3)

@@ -1,6 +1,7 @@
 import pygame
 import time
 import random
+from src.tela_final import menu_game_over
 from src.config import(
     TELA_LARGURA,
     TELA_ALTURA,
@@ -50,19 +51,19 @@ def desenhar(jogador, tempo_corrido, vidas, meteoros, tiros, onda_idx, onda_elap
     TELA.blit(JOGADOR_NAVE, (jogador.x, jogador.y))
 
     tempo_string = FONTE.render(f"{round(tempo_corrido)}s", 1, "white")
-    TELA.blit(tempo_string, (tempo_string.get_width(), TELA_ALTURA - tempo_string.get_height() - 10))
+    TELA.blit(tempo_string, (10, TELA_ALTURA - tempo_string.get_height() - 10))
 
-    vidas_string = FONTE.render(f"{vidas} HP", 1, "white")
-    TELA.blit(vidas_string, (TELA_LARGURA - vidas_string.get_width() - 10, TELA_ALTURA - vidas_string.get_height() - 10))
-
+    vidas_string = FONTE.render(f"Vidas: {vidas}", 1, "white")
+    TELA.blit(vidas_string, (10, 10))
+    
     if onda_elapsed <= 3.0:
         progresso = min(onda_elapsed, 3.0) / 3.0
         opacidade = int(255 * (1.0 - progresso))
         onda_string = FONTE.render(f"HORDA {onda_idx + 1}", True, (255, 255, 255))
-        onda_string.set_alpha(opacidade)
-        x = (TELA_LARGURA - onda_string.get_width()) // 2
-        y = 20
-        TELA.blit(onda_string, (x, y))
+
+        onda_rect = onda_string.get_rect(center=(TELA_LARGURA // 2, 40))
+
+        TELA.blit(onda_string, onda_rect)
 
     for tiro in tiros:
         pygame.draw.rect(TELA, "white", tiro)
@@ -78,6 +79,8 @@ def desenhar(jogador, tempo_corrido, vidas, meteoros, tiros, onda_idx, onda_elap
 #--------------------------------------------------------------------------
 def executar_jogo():
     run = True
+    estado = "jogo"
+    game_over_inicio = 0
     tempo_inicio = time.time()
     tempo_corrido = 0
     clock = pygame.time.Clock()
@@ -93,6 +96,7 @@ def executar_jogo():
     meteoro_contador = 0
     meteoros = []
     onda_inicio = time.time()
+    onda_elapsed = 0
     tiros = []
     while run:
         clock_delta = clock.tick(FPS)
@@ -113,9 +117,30 @@ def executar_jogo():
 
 #AREA DOS EVENTO---------------------------------------------------------------
         for event in pygame.event.get():
+           if estado == "menu_game_over":
+             if event.type == pygame.KEYDOWN:
+               if event.key == pygame.K_1:
+                   tela_inicial()
+               elif event.key == pygame.K_2:                
+                   run = False
+
+           if estado == "jogo":
+              desenhar(jogador, tempo_corrido, vidas, meteoros, tiros, onda_idx, onda_elapsed)
+
+            elif estado == "game_over":
+                game_over()
+
+                tempo_passado = pygame.time.get_ticks() - game_over_inicio
+
+                if tempo_passado > 3000:
+                  estado = "menu_game_over"
+
+            elif estado == "menu_game_over":
+                menu_game_over()
+
             if event.type == pygame.QUIT:
-                run = False
-                break
+              run = False
+              break
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_z:
                     atirar(jogador, tiros)
@@ -136,14 +161,25 @@ def executar_jogo():
         tiros_movimentacao(tiros, meteoros)
         if hit:
             vidas -= 1
-            if vidas <= 0:
-                desenhar(jogador, tempo_corrido, vidas, meteoros, tiros, onda_idx, onda_elapsed)
-                game_over()
-                run = False
-        onda_elapsed = time.time() - onda_inicio
+            if vidas <= 0 and estado == "jogo":
+                estado = "game_over"
+                game_over_inicio = pygame.time.get_ticks()
+                onda_elapsed = time.time() - onda_inicio
         if run:
-            desenhar(jogador, tempo_corrido, vidas, meteoros, tiros, onda_idx, onda_elapsed)
+            if estado == "jogo":
+              desenhar(jogador, tempo_corrido, vidas, meteoros, tiros, onda_idx, onda_elapsed)
 
+        elif estado == "game_over":
+            game_over()
+
+            tempo_passado = pygame.time.get_ticks() - game_over_inicio
+
+            if tempo_passado > 3000:
+              estado = "menu_game_over"
+
+        elif estado == "menu_game_over":
+            menu_game_over()
+            
     pygame.quit()
 
 if __name__ == "__main__":

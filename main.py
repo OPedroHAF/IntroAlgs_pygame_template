@@ -5,8 +5,6 @@ from src.jogo import executar_jogo
 def iniciar():
     pygame.init()
 
-    tela = pygame.display.set_mode((800, 600))
-
     acao = tela_inicial()
 
     if acao == "jogar":
