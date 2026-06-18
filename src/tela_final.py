@@ -1,6 +1,5 @@
 import pygame
 from src.config import TELA_LARGURA, TELA_ALTURA, PRETO, FONTE
-import pygame
 
 def menu_game_over(tela):
     tela.fill(PRETO)

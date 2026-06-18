@@ -131,7 +131,6 @@ def executar_jogo():
                         atirar(jogador, tiros)
 
                 elif estado == "menu_game_over":
-                    menu_game_over(TELA)
                     if event.key == pygame.K_1:
                         tela_inicial()
                     elif event.key == pygame.K_2:
@@ -172,6 +171,6 @@ def executar_jogo():
            menu_game_over(TELA)
 
     pygame.quit()
-    if __name__ == "__main__":
-    # Ponto de entrada da aplicação.
-    executar_jogo()
+if __name__ == "__main__":
+# Ponto de entrada da aplicação.
+  executar_jogo()

@@ -1,6 +1,7 @@
 # Configurações centrais do jogo (tela, cores e caminhos de arquivos).
 import pygame
-import pygame
+pygame.init()
+pygame.font.init()
 
 TELA_LARGURA = 700
 TELA_ALTURA = 700
