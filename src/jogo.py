@@ -22,8 +22,7 @@ from src.funcoes import (
     gerar_meteoro,
     game_over,
     atirar,
-    tiros_movimentacao,
-    vitoria
+    tiros_movimentacao
 )
 
 pygame.init()
@@ -99,10 +98,6 @@ def executar_jogo():
         clock_delta = clock.tick(FPS)
         
         tempo_corrido = time.time() - tempo_inicio
-
-        if tempo_corrido >= len(ondas) * onda_duracao:
-            vitoria()
-            run = False
         #contador recebe o tempo em milisegundos para cada tick
         meteoro_contador += clock_delta
         hit = False
