@@ -1,11 +1,9 @@
 # Configurações centrais do jogo (tela, cores e caminhos de arquivos).
 import pygame
-pygame.init()
-pygame.font.init()
+import pygame
 
 TELA_LARGURA = 700
 TELA_ALTURA = 700
-TELA = pygame.display.set_mode((TELA_LARGURA, TELA_ALTURA))
 FPS = 60
 
 TITULO_JOGO = "Projeto Final - Pygame"

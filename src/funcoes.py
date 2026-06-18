@@ -14,14 +14,12 @@ from src.config import(
     METEORO_LARGURA ,
     METEORO_VEL,
     PRETO,
+    TELA,
     FONTE,
     TIRO_ALTURA,
     TIRO_LARGURA,
     TIRO_VEL
 )
-pygame.font.init()
-TELA = pygame.display.set_mode((TELA_LARGURA, TELA_ALTURA))
-pygame.display.set_caption("Nave Py")
 
 def gerar_meteoro(meteoros):
     while True:
@@ -51,9 +49,9 @@ def jogador_movimentacao(teclas, jogador):
         jogador.y -= JOGADOR_VEL
     if teclas[pygame.K_s] and jogador.y + JOGADOR_VEL <= TELA_ALTURA - JOGADOR_ALTURA:
         jogador.y += JOGADOR_VEL
-    if teclas[pygame.K_d] and jogador.x + JOGADOR_VEL < TELA_LARGURA - JOGADOR_LARGURA:
+    if teclas[pygame.K_d] and jogador.x + JOGADOR_VEL <= TELA_LARGURA - JOGADOR_LARGURA:
         jogador.x += JOGADOR_VEL
-    if teclas[pygame.K_a] and jogador.x - JOGADOR_VEL > 0:
+    if teclas[pygame.K_a] and jogador.x - JOGADOR_VEL >= 0:
         jogador.x -= JOGADOR_VEL
 
 def tiros_movimentacao(tiros, meteoros):
@@ -88,5 +86,19 @@ def game_over():
     )
 
     TELA.blit(gameover_string, gameover_rect)
-
     pygame.display.update()
+    
+def calcular_pontos(pontos_atuais, pontos_ganhos):
+    return pontos_atuais + pontos_ganhos
+
+def jogador_perdeu(vidas):
+    return vidas <= 0
+
+def limitar_valor(valor, minimo, maximo):
+    if valor < minimo:
+        return minimo
+    if valor > maximo:
+        return maximo
+    return valor
+
+    
