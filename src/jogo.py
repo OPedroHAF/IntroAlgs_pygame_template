@@ -162,7 +162,7 @@ def executar_jogo():
             desenhar(jogador, tempo_corrido, vidas, meteoros, tiros, onda_idx, onda_elapsed)
 
         elif estado == "game_over":
-            game_over()
+            game_over(TELA)
             tempo_passado = pygame.time.get_ticks() - game_over_inicio
             if tempo_passado > 3000:
                 estado = "menu_game_over"
@@ -172,5 +172,5 @@ def executar_jogo():
 
     pygame.quit()
 if __name__ == "__main__":
-# Ponto de entrada da aplicação.
-  executar_jogo()
+    # Ponto de entrada da aplicação.
+    executar_jogo()
