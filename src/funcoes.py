@@ -84,16 +84,3 @@ def game_over():
     TELA.blit(game_over_string,((TELA_LARGURA - game_over_string.get_width()) // 2, TELA_ALTURA // 2))
     pygame.display.update()
     time.sleep(3)
-
-def vitoria():
-    TELA.fill(PRETO)
-    vitoria_string = FONTE.render("VITORIA!", True, "white")
-    texto_vitoria = FONTE.render("Parabens amiguinho <3!", True, "gray")
-    TELA.blit(vitoria_string, ((TELA_LARGURA - vitoria_string.get_width()) // 2,
-                               TELA_ALTURA // 2 - 40))
-    TELA.blit(texto_vitoria, (
-        (TELA_LARGURA - texto_vitoria.get_width()) // 2,
-        TELA_ALTURA // 2 + 20
-    ))
-    pygame.display.update()
-    time.sleep(3)
