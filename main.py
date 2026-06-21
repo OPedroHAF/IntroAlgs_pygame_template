@@ -27,8 +27,11 @@ def main():
 
         game_time = 0.0
 
+        wave = 1
+        wave_timer = 0.0
+
         meteor_timer = 0.0
-        meteor_cooldown = 1.0
+        meteor_cooldown = 1.2
         
         second_loop = True
         while second_loop:
@@ -45,10 +48,24 @@ def main():
                         time_manager.toggle_pause()
 
             game_time += dt
+            wave_timer += dt
+            
+            if wave_timer >= 25.0:
+                wave += 1
+                wave_timer = 0.0
+                
+                if wave == 2:
+                    meteor_cooldown = 0.9
+                if wave == 3:
+                    meteor_cooldown = 0.6
+                if wave == 4:
+                    meteor_cooldown = 0.3
+                if wave == 5:
+                    meteor_cooldown = 1.5
 
             meteor_timer += dt
             if meteor_timer >= meteor_cooldown:
-                functions.spawn_meteor(meteors)
+                functions.spawn_meteor(meteors, wave)
                 meteor_timer = 0.0
 
             for meteor in meteors:

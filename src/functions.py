@@ -37,8 +37,12 @@ def draw(WIN, player, time_manager, meteors_list, bullets_list, survived_time):
         WIN.blit(text_pause, text_rect)
     pygame.display.update()
 
-def spawn_meteor(meteor_list):
-    new_meteor = entities.Meteor(config.METEOR_HP, config.METEOR_SPD, config.METEOR_DAMAGE)
+def spawn_meteor(meteor_list, wave):
+    if wave >= 5:
+        hp_atual = config.METEOR_HP + 2
+    else:
+        hp_atual = config.METEOR_HP
+    new_meteor = entities.Meteor(hp_atual, config.METEOR_SPD, config.METEOR_DAMAGE)
     meteor_list.append(new_meteor)
 
 def shoot(event, bullet_list, player, time_manager):
