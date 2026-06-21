@@ -3,25 +3,54 @@ import config
 from src import entities
 from src import functions
 from src.time_manager import TimeManager
+from src.menu import GetName, Menu, SettingsMenu
+import os
 
 pygame.init()
 WIN = pygame.display.set_mode((config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
 pygame.display.set_caption("NavePy")
 
-#Carregando sprites
+# Carregando sprites
 functions.load_assets()
 
-
 def main():
-    #Definindo o o tickrate do jogo
+    # Definindo o o tickrate do jogo
     time_manager = TimeManager(config.FPS)
+    font_menu = pygame.font.Font(config.FONT_PIXEL, 60)
+
+    state = "MENU"
+    main_menu = Menu()
+    settings_menu = SettingsMenu()
+    screen_name = GetName()
+
+    while state != "GAMEPLAY":
+        if state == "MENU":
+            escolha = main_menu.run_loop(WIN, time_manager, font_menu)
+            if escolha == "play":
+                state = "GET_NAME"
+            elif escolha == "settings":
+                state = "SETTINGS"
+            else:
+                pygame.quit()
+                exit()
+
+        elif state == "SETTINGS":
+            retorno = settings_menu.run_loop(WIN, time_manager, font_menu)
+            if retorno == "menu":
+                state = "MENU"
+
+        elif state == "GET_NAME":
+            if screen_name.run_loop(WIN, time_manager, font_menu):
+                state = "GAMEPLAY"
+            else:
+                state = "MENU" 
+
     main_loop = True
     while main_loop:
-        #Criando o objeto para player
-        player = entities.Player(config.PLAYER_HP, config.PLAYER_SPD, config.PLAYER_STARTING_X, config.PLAYER_STARTING_Y, config.
-        PLAYER_WIDTH, config.PLAYER_HEIGHT)
+        # Criando o objeto para player
+        player = entities.Player(config.PLAYER_HP, config.PLAYER_SPD, config.PLAYER_STARTING_X, config.PLAYER_STARTING_Y, config.PLAYER_WIDTH, config.PLAYER_HEIGHT)
 
-        #Inicializando os meteoros
+        # Inicializando os meteoros
         meteors = []
         bullets = []
 
@@ -29,13 +58,18 @@ def main():
 
         wave = 1
         wave_timer = 0.0
+        wave_transparency = 0.0
+        fade_state = "fade_in"
+        fade_speed = 250.0
+        display_timer = 0.0
+        display_duration = 2.0
 
         meteor_timer = 0.0
         meteor_cooldown = 1.2
         
         second_loop = True
         while second_loop:
-            #Calculando o espaço de tempo entre um frame e outro / 1000
+            # Calculando o espaço de tempo entre um frame e outro / 1000
             dt = time_manager.update()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -53,7 +87,10 @@ def main():
             if wave_timer >= 25.0:
                 wave += 1
                 wave_timer = 0.0
-                
+                wave_transparency = 0.0
+                fade_state = "fade_in"
+                display_timer = 0.0
+
                 if wave == 2:
                     meteor_cooldown = 0.9
                 if wave == 3:
@@ -62,6 +99,21 @@ def main():
                     meteor_cooldown = 0.3
                 if wave == 5:
                     meteor_cooldown = 1.5
+            
+            if not time_manager.paused:
+                if fade_state == "fade_in":
+                    wave_transparency += fade_speed * dt
+                    if wave_transparency >= 255.0:
+                        wave_transparency = 255.0
+                        fade_state = "display"
+                elif fade_state == "display":
+                    display_timer += dt
+                    if display_timer >= display_duration:
+                        fade_state = "fade_out"
+                elif fade_state == "fade_out":
+                    wave_transparency -= fade_speed * dt
+                    if wave_transparency <= 0.0:
+                        fade_state = "done"
 
             meteor_timer += dt
             if meteor_timer >= meteor_cooldown:
@@ -87,7 +139,7 @@ def main():
                         
             keys = pygame.key.get_pressed()
             player.move(keys, dt)
-            functions.draw(WIN, player, time_manager, meteors, bullets, game_time)
+            functions.draw(WIN, player, time_manager, meteors, bullets, game_time, wave, wave_transparency)
 
     pygame.quit()
 

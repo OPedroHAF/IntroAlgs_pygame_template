@@ -4,10 +4,10 @@ from src import entities
 import datetime
 
 pygame.font.init()
-game_font = pygame.font.Font(None, 70)
-ui_font = pygame.font.Font(None, 40)
+game_font = pygame.font.Font(config.FONT_PIXEL, 50)
+ui_font = pygame.font.Font(config.FONT_PIXEL, 30)
 
-def draw(WIN, player, time_manager, meteors_list, bullets_list, survived_time):
+def draw(WIN, player, time_manager, meteors_list, bullets_list, survived_time, wave, wave_transparency):
     WIN.fill((30, 30, 40))
 
     WIN.blit(player.image, (player.rect.x, player.rect.y))
@@ -31,11 +31,22 @@ def draw(WIN, player, time_manager, meteors_list, bullets_list, survived_time):
         active_image = config.METEOR_FRAMES[meteor.current_frame]
         WIN.blit(active_image, (meteor.rect.x, meteor.rect.y))
 
+    if wave_transparency > 0:
+        text_wave = game_font.render(f'WAVE {wave}', True, (100, 200, 255))
+        wave_surface = pygame.Surface(text_wave.get_size(), pygame.SRCALPHA)
+        wave_surface.blit(text_wave, (0,0))
+        wave_surface.set_alpha(int(wave_transparency))
+        wave_rect = wave_surface.get_rect(center=(config.SCREEN_WIDTH // 2, config.SCREEN_HEIGHT // 2 - 150))
+        WIN.blit(wave_surface, wave_rect)
+
     if time_manager.paused:
         text_pause = game_font.render("PAUSED", True, (255, 255, 255))
         text_rect = text_pause.get_rect(center=(config.SCREEN_WIDTH // 2, config.SCREEN_HEIGHT // 2))
         WIN.blit(text_pause, text_rect)
     pygame.display.update()
+
+
+    
 
 def spawn_meteor(meteor_list, wave):
     if wave >= 5:
@@ -52,6 +63,7 @@ def shoot(event, bullet_list, player, time_manager):
             bullet_list.append(new_bullet)
 
 def load_assets():
+
     def load_meteor_frame(path):
         raw = pygame.image.load(path).convert_alpha()
         rotated = pygame.transform.rotate(raw, 270)
