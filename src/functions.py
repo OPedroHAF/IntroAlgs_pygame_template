@@ -2,6 +2,7 @@ import pygame
 import config
 from src import entities
 import datetime
+import os
 
 pygame.font.init()
 game_font = pygame.font.Font(config.FONT_PIXEL, 50)
@@ -15,6 +16,20 @@ def draw(WIN, player, time_manager, meteors_list, bullets_list, survived_time, w
     text_lives = ui_font.render(f'HP: {player.hp}', True, (255,255,255))
     text_lives_rect = text_lives.get_rect(bottomright=(config.SCREEN_WIDTH - 20, config.SCREEN_HEIGHT - 20))
     WIN.blit(text_lives, text_lives_rect)
+
+    text_score = ui_font.render(f'SCORE: {config.SCORE}', True, (255,255,255))
+    WIN.blit(text_score, (20, 20))
+    if config.COMBO_RANK is not None:
+        rank_colors = {"D": (150, 150, 150), "C": (100, 255, 100), "B": (100, 100, 255), "A": (255, 165, 0), "S": (255, 50, 50)}
+        now_color = rank_colors[config.COMBO_RANK]
+
+        text_rank = game_font.render(f'{config.COMBO_RANK}', True, now_color)
+        text_rank_rect = text_rank.get_rect(topright=(config.SCREEN_WIDTH - 20, 20))
+        WIN.blit(text_rank, text_rank_rect)
+
+        width_bar = int(100 * (config.COMBO_TIMER / config.COMBO_COOLDOWN))
+        bar_rect = pygame.Rect(config.SCREEN_WIDTH - 120, 75, width_bar, 8)
+        pygame.draw.rect(WIN, now_color, bar_rect)
 
     td = datetime.timedelta(seconds=int(survived_time))
     time_string = str(td)
@@ -87,8 +102,6 @@ def load_assets():
     size_player = (config.PLAYER_WIDTH, config.PLAYER_HEIGHT)
     config.PLAYER_IMAGE = pygame.transform.scale(raw_player, size_player)
 
-    
-
 def game_over(WIN, time_manager):
     game_over_font = pygame.font.Font(None, 100)
     instructions_font = pygame.font.Font(None, 40)
@@ -109,6 +122,9 @@ def game_over(WIN, time_manager):
                     pygame.quit()
                     exit()
                 if event.key == pygame.K_r:
+                    config.SCORE = 0
+                    config.COMBO_RANK = None
+                    config.COMBO_TIMER = 0.0
                     waiting = False
                     return True
         WIN.fill((30, 30, 40))
@@ -116,3 +132,41 @@ def game_over(WIN, time_manager):
         WIN.blit(text_instructions, rect_instructions)
         pygame.display.update()
 
+def save_record(now_score):
+    data_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data"))
+    folder_path = os.path.join(data_folder, "recorde.txt")
+    record = 0
+    try:
+        with open(folder_path, "r") as f:
+            record = int(f.read().strip())
+    except (FileNotFoundError, ValueError):
+        record = 0
+    
+    if now_score > record:
+        with open(folder_path, "w") as f:
+            f.write(str(now_score))
+
+def save_ranking(player_name, now_score):
+    data_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data"))
+    folder_path = os.path.join(data_folder, "ranking.txt")
+
+    ranking_lines = []
+    
+    try:
+        with open(folder_path, "r") as f:
+            for l in f:
+                if ":" in l:
+                    name, pts = l.strip().split(":")
+                    ranking_lines.append((name, int(pts)))
+    except FileNotFoundError:
+        pass
+
+    ranking_lines.append((player_name, now_score))
+
+    ranking_lines.sort(key=lambda x: x[1], reverse=True)
+
+    ranking_lines = ranking_lines[:5]
+
+    with open(folder_path, "w") as f:
+        for name, pts in ranking_lines:
+            f.write(f"{name}:{pts}\n")

@@ -3,6 +3,13 @@ import pygame
 FPS = 60
 FONT_PIXEL = "assets/fontes/pixel_font.ttf"
 
+#COMBO SYSTEM
+SCORE = 0
+COMBO_RANK = None
+COMBO_TIMER = 0.0
+COMBO_COOLDOWN = 2.0
+
+
 #DADOS BASE TELA
 SCREEN_WIDTH = 900
 SCREEN_HEIGHT = 900

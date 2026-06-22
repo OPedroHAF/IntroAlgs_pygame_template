@@ -51,6 +51,9 @@ class Meteor():
         if self.animation_timer >= self.animation_spd:
             self.animation_timer = 0.0
             self.current_frame = (self.current_frame + 1) % 5
+    
+    def take_damage(self, amount):
+        self.hp -= amount
 
 class Bullet():
     def __init__(self, spd, x, y, width, height):

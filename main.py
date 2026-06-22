@@ -84,6 +84,11 @@ def main():
             game_time += dt
             wave_timer += dt
             
+            if config.COMBO_RANK is not None and not time_manager.paused:
+                config.COMBO_TIMER -= dt
+                if config.COMBO_TIMER <= 0:
+                    config.COMBO_RANK = None
+
             if wave_timer >= 25.0:
                 wave += 1
                 wave_timer = 0.0
@@ -128,11 +133,42 @@ def main():
                 if bullet.rect.y < -config.BULLET_HEIGHT:
                     bullets.remove(bullet)
 
+            for bullet in bullets[:]:
+                for meteor in meteors[:]:
+                    if bullet.rect.colliderect(meteor.rect):
+                        if bullet in bullets:
+                            bullets.remove(bullet)
+                        meteor.take_damage(1)
+                        if meteor.hp <= 0:
+                            if meteor in meteors:
+                                meteors.remove(meteor)
+                            
+                            pts_values = {None: 5, 
+                                          "D": 10, 
+                                          "C": 20, 
+                                          "B": 40, 
+                                          "A": 80, 
+                                          "S": 160}
+                            config.SCORE += pts_values[config.COMBO_RANK]
+                            proximo_rank ={
+                                None: "D",
+                                "D": "C",
+                                "C": "B",
+                                "B": "A",
+                                "A": "S",
+                                "S": "S"
+                            }
+                            config.COMBO_RANK = proximo_rank[config.COMBO_RANK]
+                            config.COMBO_TIMER = config.COMBO_COOLDOWN
+                        break
+
             for meteor in meteors[:]:
                 if player.rect.colliderect(meteor.rect):
                     player.take_damage(meteor.damage)
                     meteors.remove(meteor)
                     if player.hp <= 0:
+                        functions.save_record(config.SCORE)
+                        functions.save_ranking(config.PLAYER_NAME, config.SCORE)
                         reset = functions.game_over(WIN, time_manager)
                         if reset:
                             second_loop = False
