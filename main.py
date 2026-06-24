@@ -98,12 +98,23 @@ def main():
 
                 if wave == 2:
                     meteor_cooldown = 0.9
-                if wave == 3:
+                elif wave == 3:
                     meteor_cooldown = 0.6
-                if wave == 4:
+                elif wave == 4:
                     meteor_cooldown = 0.3
-                if wave == 5:
+                elif wave == 5:
                     meteor_cooldown = 1.5
+                
+            #o if da vitoria
+            if wave > 5:
+                functions.save_record(config.SCORE)
+                functions.save_ranking(config.PLAYER_NAME, config.SCORE)
+
+                reset = functions.game_win(WIN, time_manager)
+
+                if reset:
+                    second_loop = False   
+
             
             if not time_manager.paused:
                 if fade_state == "fade_in":

@@ -132,6 +132,83 @@ def game_over(WIN, time_manager):
         WIN.blit(text_instructions, rect_instructions)
         pygame.display.update()
 
+def game_win(WIN, time_manager):
+    win_font = pygame.font.Font(config.FONT_PIXEL, 80)
+    small_font = pygame.font.Font(config.FONT_PIXEL, 35)
+
+    ranking = load_ranking()
+
+    text_win = win_font.render("YOU WIN!", True, (255, 255, 255))
+
+    waiting = True
+    while waiting:
+        time_manager.clock.tick(config.FPS)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q:
+                    pygame.quit()
+                    exit()
+
+                if event.key == pygame.K_r:
+                    config.SCORE = 0
+                    config.COMBO_RANK = None
+                    config.COMBO_TIMER = 0.0
+                    return True
+
+        WIN.fill((5, 5, 40))
+
+        cx = config.SCREEN_WIDTH // 2
+
+        header_rect = pygame.Rect(40, 50, config.SCREEN_WIDTH - 80, 120)
+        pygame.draw.rect(WIN, (0, 0, 0), header_rect)
+        pygame.draw.rect(WIN, (255, 255, 255), header_rect, 2)
+
+        WIN.blit(text_win, text_win.get_rect(center=header_rect.center))
+
+        score_text = small_font.render(
+            f"SCORE: {config.SCORE}",
+            True,
+            (255, 255, 255)
+        )
+        WIN.blit(score_text, score_text.get_rect(center=(cx, 200)))
+
+        rank_box = pygame.Rect(cx - 300, 260, 600, 250)
+        pygame.draw.rect(WIN, (0, 0, 0), rank_box)
+        pygame.draw.rect(WIN, (255, 255, 255), rank_box, 2)
+
+        title_rank = small_font.render("TOP 3 RANKING", True, (255, 200, 0))
+        WIN.blit(title_rank, title_rank.get_rect(center=(cx, 290)))
+
+        y = 340
+        for i, (name, score) in enumerate(ranking[:3]):
+            color = (255, 255, 255)
+
+            if i == 0:
+                color = (255, 215, 0)
+
+            text = small_font.render(
+                f"{i+1}. {name} - {score}",
+                True,
+                color
+            )
+
+            WIN.blit(text, text.get_rect(center=(cx, y)))
+            y += 50
+
+        btn_rect = pygame.Rect(cx - 250, 560, 500, 80)
+        pygame.draw.rect(WIN, (0, 0, 0), btn_rect)
+        pygame.draw.rect(WIN, (255, 255, 255), btn_rect, 2)
+
+        instr = small_font.render("R - Restart | Q - Quit", True, (255, 255, 255))
+        WIN.blit(instr, instr.get_rect(center=btn_rect.center))
+
+        pygame.display.update()
+
 def save_record(now_score):
     data_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data"))
     folder_path = os.path.join(data_folder, "recorde.txt")
@@ -170,3 +247,21 @@ def save_ranking(player_name, now_score):
     with open(folder_path, "w") as f:
         for name, pts in ranking_lines:
             f.write(f"{name}:{pts}\n")
+
+def load_ranking():
+    data_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data"))
+    folder_path = os.path.join(data_folder, "ranking.txt")
+
+    ranking_lines = []
+
+    try:
+        with open(folder_path, "r") as f:
+            for l in f:
+                if ":" in l:
+                    name, pts = l.strip().split(":")
+                    ranking_lines.append((name, int(pts)))
+    except FileNotFoundError:
+        return []
+
+    ranking_lines.sort(key=lambda x: x[1], reverse=True)
+    return ranking_lines
